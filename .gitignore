@@ -1,0 +1,8 @@
+node_modules
+.vscode
+test
+
+.vscode-test.mjs
+.vscodeignore
+vsc-extension-quickstart.md
+froggy.png

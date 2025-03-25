@@ -1,0 +1,181 @@
+{
+  "name": "froggy",
+  "publisher": "badlvckinc",
+  "icon": "froggy.png",
+  "displayName": "Froggy",
+  "description": "An extension for quick movement of the text cursor",
+  "version": "2.0.0",
+  "engines": {
+    "vscode": "^1.96.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./extension.js",
+  "contributes": {
+    "commands": [
+      {
+      "command": "badlvckinc.UpFive",
+      "title": "Move Text Cursor Up (5)"
+      },
+      {
+      "command": "badlvckinc.DownFive",
+      "title": "Move Text Cursor Down (5)"
+      },
+      {
+      "command": "badlvckinc.UpTen",
+      "title": "Move Text Cursor Up (10)"
+      },
+      {
+      "command": "badlvckinc.DownTen",
+      "title": "Move Text Cursor Down (10)"
+      },
+      {
+      "command": "badlvckinc.GoToLineStart",
+      "title": "Go To Line Start"
+      },
+      {
+      "command": "badlvckinc.GoToLineEnd",
+      "title": "Go To Line End"
+      },
+      {
+        "command": "badlvckinc.SelectUpOne",
+        "title": "Expand Selection Upwards (1)"
+      },
+      {
+        "command": "badlvckinc.SelectDownOne",
+        "title": "Expand Selection Downwards (1)"
+      },
+      {
+        "command": "badlvckinc.SelectUpFive",
+        "title": "Expand Selection Upwards (5)"
+      },
+      {
+        "command": "badlvckinc.SelectDownFive",
+        "title": "Expand Selection Downwards (5)"
+      },
+      {
+        "command": "badlvckinc.SelectUpTen",
+        "title": "Expand Selection Upwards (10)"
+      },
+      {
+        "command": "badlvckinc.SelectDownTen",
+        "title": "Expand Selection Downwards (10)"
+      },
+      {
+        "command": "badlvckinc.ExpandSelectionToLineStart",
+        "title": "Expand Selection To Line Start"
+      },
+      {
+        "command": "badlvckinc.ExpandSelectionToLineEnd",
+        "title": "Expand Selection To Line End"
+      },
+      {
+        "command": "badlvckinc.FroggyPrompt",
+        "title": "Start Froggy's Advanced Feature Prompt"
+      },
+      {
+        "command": "badlvckinc.RepeatLastCommand",
+        "title": "Repeat Last Advanced Macro Command"
+      }
+    ],
+    "keybindings": [
+      {
+          "command": "badlvckinc.UpFive",
+          "key": "ctrl+up",
+          "when": "editorTextFocus"
+      },
+      {
+          "command": "badlvckinc.UpTen",
+          "key": "ctrl+alt+up",
+          "when": "editorTextFocus"
+      },
+      {
+          "command": "badlvckinc.DownFive",
+          "key": "ctrl+down",
+          "when": "editorTextFocus"
+      },
+      {
+          "command": "badlvckinc.DownTen",
+          "key": "ctrl+alt+down",
+          "when": "editorTextFocus"
+      },
+      {
+          "command": "badlvckinc.GoToLineStart",
+          "key": "ctrl+alt+left",
+          "when": "editorTextFocus"
+      },
+      {
+          "command": "badlvckinc.GoToLineEnd",
+          "key": "ctrl+alt+right",
+          "when": "editorTextFocus"
+      },
+      {
+        "command": "badlvckinc.SelectUpOne",
+        "key": "shift+up",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "badlvckinc.SelectDownOne",
+        "key": "shift+down",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "badlvckinc.SelectUpFive",
+        "key": "ctrl+shift+up",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "badlvckinc.SelectDownFive",
+        "key": "ctrl+shift+down",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "badlvckinc.SelectUpTen",
+        "key": "ctrl+alt+shift+up",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "badlvckinc.SelectDownTen",
+        "key": "ctrl+alt+shift+down",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "badlvckinc.ExpandSelectionToLineStart",
+        "key": "ctrl+alt+shift+left",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "badlvckinc.ExpandSelectionToLineEnd",
+        "key": "ctrl+alt+shift+right",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "badlvckinc.FroggyPrompt",
+        "key": "ctrl+alt+numpad6",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "badlvckinc.RepeatLastCommand",
+        "key": "ctrl+alt+numpad5",
+        "when": "editorTextFocus"
+      }
+    ]
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "pretest": "npm run lint",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.96.0",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "20.x",
+    "eslint": "^9.16.0",
+    "@vscode/test-cli": "^0.0.10",
+    "@vscode/test-electron": "^2.4.1"
+  }
+}
