@@ -62,6 +62,7 @@ function activate(context) {
 
 	function goToMacro(lineNumber){
 		const editor = vscode.window.activeTextEditor;
+
 		const destinationIndex = editor.document.lineCount >= lineNumber ? lineNumber : editor.document.lineCount;
 		editor.selection = new vscode.Selection(
 			new vscode.Position(destinationIndex, 0),
@@ -196,6 +197,10 @@ function activate(context) {
 
 	function handlePromptValue(value){
 		const editor = vscode.window.activeTextEditor;
+
+		if (!editor) {
+			return;
+		}
 
 		switch(true){
 			case value == 'start':
