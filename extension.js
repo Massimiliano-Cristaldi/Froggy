@@ -7,7 +7,7 @@ function activate(context) {
 		vscode.window.showErrorMessage('Froggy: No last command given');
 	};
 
-	function moveMacro(direction, leapDistance){
+	function moveMacro(direction, leapDistance, updateHistory = false){
 		const editor = vscode.window.activeTextEditor;
 		if (!editor) {
 			return;
@@ -25,9 +25,13 @@ function activate(context) {
 			lineNumber: newLine,
 			at: 'center'
 		});
+
+		if (updateHistory) {
+			lastCommand = ()=>{moveMacro(direction, leapDistance, updateHistory)};
+		}
 	};
 
-	function selectMacro(direction, leapDistance){
+	function selectMacro(direction, leapDistance, updateHistory = false){
 		const editor = vscode.window.activeTextEditor;
         if (!editor) {
 			return;
@@ -58,6 +62,10 @@ function activate(context) {
 			lineNumber: leapLineNumber,
 			at: 'center'
 		});
+
+		if (updateHistory) {
+			lastCommand = ()=>{selectMacro(direction, leapDistance, updateHistory)};
+		}
 	};
 
 	function goToMacro(lineNumber){
@@ -73,6 +81,8 @@ function activate(context) {
 			lineNumber: destinationIndex,
 			at: 'center'
 		});
+
+		lastCommand = ()=>{goToMacro(lineNumber)};
 	};
 
 	function shiftMacro(direction, leapDistance){
@@ -142,39 +152,70 @@ function activate(context) {
 					lineNumber: newStartLine,
 					at: 'center'
 				});
+
+				lastCommand = ()=>{shiftMacro(direction, leapDistance)}
 			}, 10);
 		})
 	}
 
-	function findMacro(direction, characters){
+	function findMacro(direction, input){
 		const editor = vscode.window.activeTextEditor;
+		let characters;
+		if (input == '') {
+			const selectedText = editor.document.getText(editor.selection);
+			if (!selectedText) {
+				vscode.window.showWarningMessage('You cannot run this command without arguments if you have no text selected.');
+				return;
+			}
 
-		const startingLineIndex = direction == 'next' ?
-							 editor.selection.end.line :
-							 editor.selection.start.line
+			characters = selectedText;
+			lastCommand = ()=>{findMacro(direction, selectedText)};
+		} else {
+			characters = input;
+			lastCommand = ()=>{findMacro(direction, input)};
+		}
+
 		const lastLineIndex = editor.document.lineCount - 1;
+		let startingLineIndex;
+		switch (direction) {
+			case 'next':
+				startingLineIndex = editor.selection.end.line;
+				break;
+			case 'prev':
+				startingLineIndex = editor.selection.start.line;
+				break;
+			case 'first':
+				startingLineIndex = 0;
+				break;
+			case 'last':
+				startingLineIndex = lastLineIndex;
+				break;
+		}
 
 		let targetLineIndex;
 		let targetCharIndex;
 		let currentLineIndex = startingLineIndex;
-		let currentCharIndex = editor.selection.start.character;
+		const offset = direction == 'next' || direction == 'first' ? characters.length : 0;
+		let currentCharIndex = editor.selection.start.character + offset;
+		
 		while (!targetLineIndex) {
 			const textAtCurrentLine = editor.document.lineAt(currentLineIndex).text;
-			const matchesInputValue = direction == 'next' ?
-									  textAtCurrentLine.includes(characters, currentCharIndex + characters.length) :
+			const matchesInputValue = direction == 'next' || direction == 'first' ?
+									  textAtCurrentLine.includes(characters, currentCharIndex) :
 									  textAtCurrentLine.substring(0, currentCharIndex).includes(characters);
 			if (matchesInputValue) {
 				targetLineIndex = currentLineIndex;
-				targetCharIndex = direction == 'next' ?
-				 				  textAtCurrentLine.indexOf(characters, currentCharIndex + characters.length) :
+				targetCharIndex = direction == 'next' || direction == 'first' ?
+				 				  textAtCurrentLine.indexOf(characters, currentCharIndex) :
 								  textAtCurrentLine.substring(0, currentCharIndex).lastIndexOf(characters);
 			} else {
-				currentLineIndex += direction == 'next' ? 1 : -1;
-				currentCharIndex = direction == 'next' ? 0 : 10000;
+				currentLineIndex += direction == 'next' || direction == 'first' ? 1 : -1;
+				currentCharIndex = direction == 'next' || direction == 'first' ? 0 : 10000;
 			}
 
 			const isInbounds = currentLineIndex >= 0 && currentLineIndex <= lastLineIndex;
-			const isLastCheck = currentLineIndex == 0 || currentLineIndex == lastLineIndex;
+			const isLastCheck = ((direction == 'prev' || direction == 'last') && currentLineIndex == 0) ||
+								((direction == 'next' || direction == 'first') && currentLineIndex == lastLineIndex);
 			if (isLastCheck && !targetLineIndex) {
 				vscode.window.showWarningMessage(`Froggy: No ${direction == 'next' ? 'following' : 'previous'} match for '${characters}'`);
 				return;
@@ -195,9 +236,46 @@ function activate(context) {
 		});
 	}
 
+	async function goToDefMacro(input){
+		const editor = vscode.window.activeTextEditor;
+		let symbolName;
+		if (input == '') {
+			const selectedText = editor.document.getText(editor.selection);
+			if (!selectedText) {
+				vscode.window.showWarningMessage('You cannot run this command without arguments if you have no text selected.');
+				return;
+			}
+
+			symbolName = selectedText;
+			lastCommand = ()=>{goToDefMacro(selectedText)};
+		} else {
+			symbolName = input;
+			lastCommand = ()=>{goToDefMacro(input)};
+		}
+
+		const symbols = await vscode.commands.executeCommand('vscode.executeWorkspaceSymbolProvider', symbolName);
+		
+		if (symbols.length) {
+			const location = symbols[symbols.length - 1].location;
+			const document = await vscode.workspace.openTextDocument(location.uri);
+			const editor = await vscode.window.showTextDocument(document);
+
+			editor.selection = new vscode.Selection(
+				location.range.start,
+				location.range.start
+			);
+
+			vscode.commands.executeCommand('revealLine', {
+				lineNumber: location.range.start.line,
+				at: 'center'
+			});
+		} else {
+			vscode.window.showWarningMessage(`Could not find symbol '${symbolName}'.`);
+		}
+	}
+
 	function handlePromptValue(value){
 		const editor = vscode.window.activeTextEditor;
-
 		if (!editor) {
 			return;
 		}
@@ -205,50 +283,55 @@ function activate(context) {
 		switch(true){
 			case value == 'start':
 				goToMacro(0);
-				lastCommand = ()=>{goToMacro(0)};
 				break;
-				case value == 'end':
+			case value == 'end':
 				const lastLineIndex = editor.document.lineCount - 1;
 				goToMacro(lastLineIndex);
-				lastCommand = ()=>{goToMacro(lastLineIndex)};
 				break;
-			case /^goto\d+$/.test(value):
+			case /^goto.*$/.test(value):
 				const destinationIndex = Number(value.match(/\d+$/)[0]) - 1;
 				goToMacro(destinationIndex);
-				lastCommand = ()=>{goToMacro(destinationIndex)};
 				break;
-			case /^up\d+$/.test(value):
+			case /^up.*$/.test(value):
 				const upCount = Number(value.match(/\d+$/)[0]);
-				moveMacro('up', upCount);
-				lastCommand = ()=>{moveMacro('up', upCount)};
+				moveMacro('up', upCount, true);
 				break;
-			case /^down\d+$/.test(value):
+			case /^down.*$/.test(value):
 				const downCount = Number(value.match(/\d+$/)[0]);
-				moveMacro('down', downCount);
-				lastCommand = ()=>{moveMacro('down', downCount)};
+				moveMacro('down', downCount, true);
 				break;
-			case /^shup\d+$/.test(value):
+			case /^shup.*$/.test(value):
 				const shiftUpCount = Number(value.match(/\d+$/)[0]);
 				shiftMacro('up', shiftUpCount);
-				lastCommand = ()=>{shiftMacro('up', shiftUpCount)};
 				break;
-			case /^shdown\d+$/.test(value):
+			case /^shdown.*$/.test(value):
 				const shiftDownCount = Number(value.match(/\d+$/)[0]);
 				shiftMacro('down', shiftDownCount);
-				lastCommand = ()=>{shiftMacro('down', shiftDownCount);}
 				break;
-			case /^next.+$/.test(value):
+			case /^next.*$/.test(value):
 				const nextChars = value.replace('next', '');
 				findMacro('next', nextChars);
-				lastCommand = ()=>{findMacro('next', nextChars)};
 				break;
-			case /^prev.+$/.test(value):
+			case /^prev.*$/.test(value):
 				const prevChars = value.replace('prev', '');
 				findMacro('prev', prevChars);
-				lastCommand = ()=>{findMacro('prev', prevChars)};
+				break;
+			case /^first.*$/.test(value):
+				const firstChars = value.replace('first', '');
+				findMacro('first', firstChars);
+				break;
+			case /^last.*$/.test(value):
+				const lastChars = value.replace('last', '');
+				findMacro('last', lastChars);
+				break;
+			case /^def.*$/.test(value):
+				const defChars = value.replace('def', '');
+				goToDefMacro(defChars);
 				break;
 			case value != undefined:
-				vscode.window.showErrorMessage(`Froggy: Unknown command '${value}'`);
+				vscode.window.showErrorMessage(`Froggy command '${value}' is unknown, is missing arguments or has wrong argument type.`);
+				break;
+			default:
 				break;
 		}
 	}

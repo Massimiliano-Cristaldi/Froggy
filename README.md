@@ -34,7 +34,12 @@ Advanced macros include:
 - goto(number) e.g. goto75 = go to line (number)
 - shup(number) e.g. shup15 = move selection up by (number) lines
 - shdown(number) e.g. shdown15 = move selection down by (number) lines
-- next(char(s)) e.g. nextdb = find next occurrence of one or more characters starting from the current position of the text cursor
-- prev(char(s)) e.g. prevdb = find previous occurrence of one or more characters starting from the current position of the text cursor
+- next(chars) e.g. nextdb = find next occurrence of one or more characters starting from the current position of the text cursor
+- prev(chars) e.g. prevdb = find previous occurrence of one or more characters starting from the current position of the text cursor
+- first(chars) e.g. firstdb = find first occurrence of one or more characters
+- last(chars) e.g. lastdb = find last occurrence of one or more characters
+- def(chars) e.g. defdb = go to definition of a given symbol
+
+Commands that take a string as argument can be run without any arguments if you have some text selected, in which case the current selection will be passed as an argument to that command (e.g. 'next' will find the next occurrence of the currently selected text).
 
 Advanced macros can be repeated with the command badlvckinc.RepeatLastCommand. The default keybinding for this command is ctrl + alt + numpad5, but it can be changed by editing the keybindings.json file, like explained above.
