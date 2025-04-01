@@ -168,11 +168,11 @@ function activate(context) {
 				return;
 			}
 
-			characters = selectedText;
-			lastCommand = ()=>{findMacro(direction, selectedText)};
+			characters = selectedText.toLowerCase();
+			lastCommand = ()=>{findMacro(direction, selectedText.toLowerCase())};
 		} else {
-			characters = input;
-			lastCommand = ()=>{findMacro(direction, input)};
+			characters = input.toLowerCase();
+			lastCommand = ()=>{findMacro(direction, input.toLowerCase())};
 		}
 
 		const lastLineIndex = editor.document.lineCount - 1;
@@ -199,7 +199,7 @@ function activate(context) {
 		let currentCharIndex = editor.selection.start.character + offset;
 		
 		while (!targetLineIndex) {
-			const textAtCurrentLine = editor.document.lineAt(currentLineIndex).text;
+			const textAtCurrentLine = editor.document.lineAt(currentLineIndex).text.toLowerCase();
 			const matchesInputValue = direction == 'next' || direction == 'first' ?
 									  textAtCurrentLine.includes(characters, currentCharIndex) :
 									  textAtCurrentLine.substring(0, currentCharIndex).includes(characters);
@@ -246,11 +246,11 @@ function activate(context) {
 				return;
 			}
 
-			symbolName = selectedText;
-			lastCommand = ()=>{goToDefMacro(selectedText)};
+			symbolName = selectedText.toLowerCase();
+			lastCommand = ()=>{goToDefMacro(selectedText.toLowerCase())};
 		} else {
-			symbolName = input;
-			lastCommand = ()=>{goToDefMacro(input)};
+			symbolName = input.toLowerCase();
+			lastCommand = ()=>{goToDefMacro(input.toLowerCase())};
 		}
 
 		const symbols = await vscode.commands.executeCommand('vscode.executeWorkspaceSymbolProvider', symbolName);
