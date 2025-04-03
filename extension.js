@@ -7,6 +7,8 @@ function activate(context) {
 		vscode.window.showErrorMessage('Froggy: No last command given');
 	};
 
+	let lastStringParam;
+
 	function moveMacro(direction, leapDistance, updateHistory = false){
 		const editor = vscode.window.activeTextEditor;
 		if (!editor) {
@@ -43,7 +45,7 @@ function activate(context) {
 		const leapLineNumber = direction == 'up' ? Math.max(selectionStartLine - leapDistance, 0) : Math.min(selectionEndLine + leapDistance, lineCount - 1);
 		const selectionHeight = selectionEndLine - selectionStartLine + 1;
 		const selectionLength = editor.document.getText(editor.selection).length;
-		var textLength = 0
+		var textLength = 0;
 		for (let i = 0; i < selectionHeight; i++) {
 			textLength += editor.document.lineAt(editor.selection.end.line - i).text.length;
 		}
@@ -52,7 +54,7 @@ function activate(context) {
 			const startPosition = new vscode.Position(selectionStartLine, 0);
 			const endPosition = new vscode.Position(selectionEndLine, textLength);
 			editor.selection = new vscode.Selection(startPosition, endPosition);
-		} else if (selectionStartLine >= 1) {
+		} else {
 			const startPosition = new vscode.Position(direction == 'up' ? leapLineNumber : selectionStartLine, 0);
 			const endPosition = new vscode.Position(direction == 'up' ? selectionEndLine : leapLineNumber, textLength);
 			editor.selection = new vscode.Selection(startPosition, endPosition);
@@ -160,19 +162,39 @@ function activate(context) {
 
 	function findMacro(direction, input){
 		const editor = vscode.window.activeTextEditor;
-		let characters;
-		if (input == '') {
-			const selectedText = editor.document.getText(editor.selection);
-			if (!selectedText) {
-				vscode.window.showWarningMessage('You cannot run this command without arguments if you have no text selected.');
-				return;
-			}
 
-			characters = selectedText.toLowerCase();
-			lastCommand = ()=>{findMacro(direction, selectedText.toLowerCase())};
-		} else {
-			characters = input.toLowerCase();
-			lastCommand = ()=>{findMacro(direction, input.toLowerCase())};
+		let characters;
+		switch (input) {
+			case '':
+				const selectedText = editor.document.getText(editor.selection);
+				if (!selectedText) {
+					vscode.window.showWarningMessage('You cannot run this command without arguments if you have no text selected.');
+					return;
+				}
+
+				characters = selectedText.toLowerCase();
+				lastStringParam = selectedText.toLowerCase();
+				lastCommand = ()=>{findMacro(direction, selectedText.toLowerCase())};
+				break;
+			case '#':
+				if (lastStringParam) {
+					characters = lastStringParam;
+					lastCommand = ()=>{findMacro(direction, lastStringParam)};
+				} else {
+					vscode.window.showWarningMessage('No saved string argument was found.');
+					return;
+				}
+				break;
+			case '\\#':
+				characters = '#';
+				lastStringParam = '#';
+				lastCommand = ()=>{findMacro(direction, '\\#')};
+				break;
+			default:
+				characters = input.toLowerCase();
+				lastStringParam = input.toLowerCase();
+				lastCommand = ()=>{findMacro(direction, input.toLowerCase())};
+				break;
 		}
 
 		const lastLineIndex = editor.document.lineCount - 1;
@@ -239,6 +261,37 @@ function activate(context) {
 	async function goToDefMacro(input){
 		const editor = vscode.window.activeTextEditor;
 		let symbolName;
+		switch (input) {
+			case '':
+				const selectedText = editor.document.getText(editor.selection);
+				if (!selectedText) {
+					vscode.window.showWarningMessage('You cannot run this command without arguments if you have no text selected.');
+					return;
+				}
+	
+				symbolName = selectedText.toLowerCase();
+				lastStringParam = selectedText.toLowerCase();
+				lastCommand = ()=>{goToDefMacro(selectedText.toLowerCase())};
+				break;
+			case '#':
+				if (lastStringParam) {
+					symbolName = lastStringParam;
+					lastCommand = ()=>{goToDefMacro(lastStringParam)};
+				} else {
+					vscode.window.showWarningMessage('No saved string argument was found.');
+				}
+				break;
+			case '\\#':
+				symbolName = '#';
+				lastStringParam = '\\#';
+				lastCommand = ()=>{goToDefMacro('\\#')};
+				break;
+			default:
+				symbolName = input.toLowerCase();
+				lastStringParam = input.toLowerCase();
+				lastCommand = ()=>{goToDefMacro(input.toLowerCase())};
+				break;
+		}
 		if (input == '') {
 			const selectedText = editor.document.getText(editor.selection);
 			if (!selectedText) {
