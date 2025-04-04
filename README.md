@@ -39,8 +39,9 @@ Advanced macros include:
 - first(chars) e.g. firstdb = find first occurrence of one or more characters
 - last(chars) e.g. lastdb = find last occurrence of one or more characters
 - def(chars) e.g. defdb = go to definition of a given symbol
+- err = go to the next syntax error in the text document, or the first if there is no next
 
 Commands that take a string as argument can be run without any arguments if you have some text selected, in which case the current selection will be passed as an argument to that command (e.g. 'next' will find the next occurrence of the currently selected text).
 These commands can also take the last string parameter given to a command, by passing '#' to it. For example, if I execute 'firstdb', I can then execute 'last#' to find the last occurrence of 'db' (since it's the last string parameter used), 'next#' to find the next occurrence of 'db', and so on. Should you want to pass '#' as a string argument without any special meaning, you can simply escape it (e.g. 'prev\#').
 
-Advanced macros can be repeated with the command badlvckinc.RepeatLastCommand. The default keybinding for this command is ctrl + alt + numpad5, but it can be changed by editing the keybindings.json file, like explained above.
+Advanced macros can be repeated with the command badlvckinc.RepeatLastCommand. The default keybinding for this command is ctrl + alt + numpad5, but it can be changed by editing the keybindings.json file, as explained above.
