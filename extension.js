@@ -160,7 +160,7 @@ function activate(context) {
 		})
 	}
 
-	function findMacro(direction, input){
+	function findMacro(direction, input, findAndSelect){
 		const editor = vscode.window.activeTextEditor;
 
 		let characters;
@@ -174,12 +174,12 @@ function activate(context) {
 
 				characters = selectedText.toLowerCase();
 				lastStringParam = selectedText.toLowerCase();
-				lastCommand = ()=>{findMacro(direction, selectedText.toLowerCase())};
+				lastCommand = ()=>{findMacro(direction, selectedText.toLowerCase(), findAndSelect)};
 				break;
 			case '#':
 				if (lastStringParam) {
 					characters = lastStringParam;
-					lastCommand = ()=>{findMacro(direction, lastStringParam)};
+					lastCommand = ()=>{findMacro(direction, lastStringParam, findAndSelect)};
 				} else {
 					vscode.window.showWarningMessage('No saved string argument was found.');
 					return;
@@ -188,12 +188,12 @@ function activate(context) {
 			case '\\#':
 				characters = '#';
 				lastStringParam = '#';
-				lastCommand = ()=>{findMacro(direction, '\\#')};
+				lastCommand = ()=>{findMacro(direction, '\\#', findAndSelect)};
 				break;
 			default:
 				characters = input.toLowerCase();
 				lastStringParam = input.toLowerCase();
-				lastCommand = ()=>{findMacro(direction, input.toLowerCase())};
+				lastCommand = ()=>{findMacro(direction, input.toLowerCase(), findAndSelect)};
 				break;
 		}
 
@@ -248,7 +248,7 @@ function activate(context) {
 
 		const newCursor = new vscode.Selection(
 			new vscode.Position(targetLineIndex, targetCharIndex),
-			new vscode.Position(targetLineIndex, targetCharIndex)
+			new vscode.Position(targetLineIndex, findAndSelect ? (targetCharIndex + characters.length) : targetCharIndex)
 		)
 		editor.selection = newCursor;
 
@@ -258,7 +258,7 @@ function activate(context) {
 		});
 	}
 
-	async function goToDefMacro(input){
+	async function goToDefMacro(input, findAndSelect){
 		const editor = vscode.window.activeTextEditor;
 		let symbolName;
 		switch (input) {
@@ -271,12 +271,12 @@ function activate(context) {
 	
 				symbolName = selectedText.toLowerCase();
 				lastStringParam = selectedText.toLowerCase();
-				lastCommand = ()=>{goToDefMacro(selectedText.toLowerCase())};
+				lastCommand = ()=>{goToDefMacro(selectedText.toLowerCase(), findAndSelect)};
 				break;
 			case '#':
 				if (lastStringParam) {
 					symbolName = lastStringParam;
-					lastCommand = ()=>{goToDefMacro(lastStringParam)};
+					lastCommand = ()=>{goToDefMacro(lastStringParam, findAndSelect)};
 				} else {
 					vscode.window.showWarningMessage('No saved string argument was found.');
 				}
@@ -284,26 +284,13 @@ function activate(context) {
 			case '\\#':
 				symbolName = '#';
 				lastStringParam = '\\#';
-				lastCommand = ()=>{goToDefMacro('\\#')};
+				lastCommand = ()=>{goToDefMacro('\\#', findAndSelect)};
 				break;
 			default:
 				symbolName = input.toLowerCase();
 				lastStringParam = input.toLowerCase();
-				lastCommand = ()=>{goToDefMacro(input.toLowerCase())};
+				lastCommand = ()=>{goToDefMacro(input.toLowerCase(), findAndSelect)};
 				break;
-		}
-		if (input == '') {
-			const selectedText = editor.document.getText(editor.selection);
-			if (!selectedText) {
-				vscode.window.showWarningMessage('You cannot run this command without arguments if you have no text selected.');
-				return;
-			}
-
-			symbolName = selectedText.toLowerCase();
-			lastCommand = ()=>{goToDefMacro(selectedText.toLowerCase())};
-		} else {
-			symbolName = input.toLowerCase();
-			lastCommand = ()=>{goToDefMacro(input.toLowerCase())};
 		}
 
 		const symbols = await vscode.commands.executeCommand('vscode.executeWorkspaceSymbolProvider', symbolName);
@@ -313,9 +300,12 @@ function activate(context) {
 			const document = await vscode.workspace.openTextDocument(location.uri);
 			const editor = await vscode.window.showTextDocument(document);
 
+			const selectionEndLine = location.range.start.line;
+			const selectionEndChar = findAndSelect ? (location.range.start.character + symbolName.length) : location.range.start.character;
+			const endPosition = new vscode.Position(selectionEndLine, selectionEndChar);
 			editor.selection = new vscode.Selection(
 				location.range.start,
-				location.range.start
+				endPosition
 			);
 
 			vscode.commands.executeCommand('revealLine', {
@@ -399,25 +389,31 @@ function activate(context) {
 				const shiftDownCount = Number(value.match(/\d+$/)[0]);
 				shiftMacro('down', shiftDownCount);
 				break;
-			case /^next.*$/.test(value):
-				const nextChars = value.replace('next', '');
-				findMacro('next', nextChars);
+			case /^s?next.*$/.test(value):
+				const nextChars = value.replace(/^s?next/, '');
+				console.log("printing 'nextChars' from line 404:", nextChars)
+				const selectNextMatch = /^s/.test(value);
+				findMacro('next', nextChars, selectNextMatch);
 				break;
-			case /^prev.*$/.test(value):
-				const prevChars = value.replace('prev', '');
-				findMacro('prev', prevChars);
+			case /^s?prev.*$/.test(value):
+				const prevChars = value.replace(/^s?prev/, '');
+				const selectPrevMatch = /^s/.test(value);
+				findMacro('prev', prevChars, selectPrevMatch);
 				break;
-			case /^first.*$/.test(value):
-				const firstChars = value.replace('first', '');
-				findMacro('first', firstChars);
+			case /^s?first.*$/.test(value):
+				const firstChars = value.replace(/^s?first/, '');
+				const selectFirstMatch = /^s/.test(value);
+				findMacro('first', firstChars, selectFirstMatch);
 				break;
-			case /^last.*$/.test(value):
-				const lastChars = value.replace('last', '');
-				findMacro('last', lastChars);
+			case /^s?last.*$/.test(value):
+				const lastChars = value.replace(/^s?last/, '');
+				const selectLastMatch = /^s/.test(value);
+				findMacro('last', lastChars, selectLastMatch);
 				break;
-			case /^def.*$/.test(value):
-				const defChars = value.replace('def', '');
-				goToDefMacro(defChars);
+			case /^s?def.*$/.test(value):
+				const defChars = value.replace(/^s?def/, '');
+				const selectDef = /^s/.test(value);
+				goToDefMacro(defChars, selectDef);
 				break;
 			case value == 'err':
 				findErrorMacro();
