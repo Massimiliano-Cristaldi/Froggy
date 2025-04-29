@@ -217,14 +217,17 @@ function activate(context) {
 		let targetLineIndex;
 		let targetCharIndex;
 		let currentLineIndex = startingLineIndex;
-		const offset = direction == 'next' || direction == 'first' ? characters.length : 0;
+		let offset = direction == 'next' || direction == 'first' ? characters.length : 0;
 		let currentCharIndex = editor.selection.start.character + offset;
 		
+		let isFirstLoop = true;
+
 		while (!targetLineIndex) {
 			const textAtCurrentLine = editor.document.lineAt(currentLineIndex).text.toLowerCase();
 			const matchesInputValue = direction == 'next' || direction == 'first' ?
 									  textAtCurrentLine.includes(characters, currentCharIndex) :
 									  textAtCurrentLine.substring(0, currentCharIndex).includes(characters);
+
 			if (matchesInputValue) {
 				targetLineIndex = currentLineIndex;
 				targetCharIndex = direction == 'next' || direction == 'first' ?
@@ -232,16 +235,28 @@ function activate(context) {
 								  textAtCurrentLine.substring(0, currentCharIndex).lastIndexOf(characters);
 			} else {
 				currentLineIndex += direction == 'next' || direction == 'first' ? 1 : -1;
-				currentCharIndex = direction == 'next' || direction == 'first' ? 0 : 10000;
+				currentCharIndex = direction == 'next' || direction == 'first' ? 0 : 2147483647;
 			}
 
-			const isInbounds = currentLineIndex >= 0 && currentLineIndex <= lastLineIndex;
 			const isLastCheck = ((direction == 'prev' || direction == 'last') && currentLineIndex == 0) ||
 								((direction == 'next' || direction == 'first') && currentLineIndex == lastLineIndex);
+			
 			if (isLastCheck && !targetLineIndex) {
-				vscode.window.showWarningMessage(`Froggy: No ${direction == 'next' ? 'following' : 'previous'} match for '${characters}'`);
-				return;
-			} else if (!isInbounds) {
+				const shouldLoop = vscode.workspace.getConfiguration('froggy').get('findMacroLoops', true) && isFirstLoop;
+				
+				if (shouldLoop && direction == 'next'){
+					currentLineIndex = 0;
+					currentCharIndex = 0;
+					isFirstLoop = false;
+				} else if (shouldLoop && direction == 'prev'){
+					currentLineIndex = lastLineIndex;
+					currentCharIndex = 2147483647;
+					isFirstLoop = false;
+				} else {
+					vscode.window.showWarningMessage(`No match for '${characters}' with the given parameters.`);
+					return;
+				}
+			} else if (isLastCheck && !isFirstLoop) {
 				break;
 			}
 		}
@@ -368,6 +383,7 @@ function activate(context) {
 			case value == 'end':
 				const lastLineIndex = editor.document.lineCount - 1;
 				goToMacro(lastLineIndex);
+				lastCommand = ()=>{goToMacro(lastLineIndex)};
 				break;
 			case /^goto.*$/.test(value):
 				const destinationIndex = Number(value.match(/\d+$/)[0]) - 1;
@@ -391,7 +407,6 @@ function activate(context) {
 				break;
 			case /^s?next.*$/.test(value):
 				const nextChars = value.replace(/^s?next/, '');
-				console.log("printing 'nextChars' from line 404:", nextChars)
 				const selectNextMatch = /^s/.test(value);
 				findMacro('next', nextChars, selectNextMatch);
 				break;
@@ -539,7 +554,11 @@ function activate(context) {
 
 		quotes = [
 			'Today is your victory over yourself of yesterday, tomorrow is your victory over lesser men',
-			'The weak are meat, the strong eat'
+			'The weak are meat, the strong eat',
+			'A man without tea in him cannot understand truth or beauty',
+			'Life is the pursuit of the impossible through the useless',
+			'To think about the present is to wake up from the past',
+			'To love a woman is, in good part, an exercise in rhetorics'
 		];
 		randomIndex = Math.round(Math.random() * (quotes.length - 1));
 		randomQuote = quotes[randomIndex];

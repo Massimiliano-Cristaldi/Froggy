@@ -4,7 +4,7 @@
   "icon": "froggy.png",
   "displayName": "Froggy",
   "description": "An extension for quick movement of the text cursor",
-  "version": "2.1.4",
+  "version": "2.2.0",
   "engines": {
     "vscode": "^1.96.0"
   },
@@ -16,72 +16,6 @@
   ],
   "main": "./extension.js",
   "contributes": {
-    "commands": [
-      {
-      "command": "badlvckinc.UpFive",
-      "title": "Move Text Cursor Up (5)"
-      },
-      {
-      "command": "badlvckinc.DownFive",
-      "title": "Move Text Cursor Down (5)"
-      },
-      {
-      "command": "badlvckinc.UpTen",
-      "title": "Move Text Cursor Up (10)"
-      },
-      {
-      "command": "badlvckinc.DownTen",
-      "title": "Move Text Cursor Down (10)"
-      },
-      {
-      "command": "badlvckinc.GoToLineStart",
-      "title": "Go To Line Start"
-      },
-      {
-      "command": "badlvckinc.GoToLineEnd",
-      "title": "Go To Line End"
-      },
-      {
-        "command": "badlvckinc.SelectUpOne",
-        "title": "Expand Selection Upwards (1)"
-      },
-      {
-        "command": "badlvckinc.SelectDownOne",
-        "title": "Expand Selection Downwards (1)"
-      },
-      {
-        "command": "badlvckinc.SelectUpFive",
-        "title": "Expand Selection Upwards (5)"
-      },
-      {
-        "command": "badlvckinc.SelectDownFive",
-        "title": "Expand Selection Downwards (5)"
-      },
-      {
-        "command": "badlvckinc.SelectUpTen",
-        "title": "Expand Selection Upwards (10)"
-      },
-      {
-        "command": "badlvckinc.SelectDownTen",
-        "title": "Expand Selection Downwards (10)"
-      },
-      {
-        "command": "badlvckinc.ExpandSelectionToLineStart",
-        "title": "Expand Selection To Line Start"
-      },
-      {
-        "command": "badlvckinc.ExpandSelectionToLineEnd",
-        "title": "Expand Selection To Line End"
-      },
-      {
-        "command": "badlvckinc.FroggyPrompt",
-        "title": "Start Froggy's Advanced Feature Prompt"
-      },
-      {
-        "command": "badlvckinc.RepeatLastCommand",
-        "title": "Repeat Last Advanced Macro Command"
-      }
-    ],
     "keybindings": [
       {
           "command": "badlvckinc.UpFive",
@@ -162,6 +96,18 @@
         "command": "badlvckinc.RepeatLastCommand",
         "key": "ctrl+alt+numpad5",
         "when": "editorTextFocus"
+      }
+    ],
+    "configuration":[
+      {
+        "title": "froggy",
+        "properties": {
+          "froggy.findMacroLoops": {
+            "type": "boolean",
+            "default": true,
+            "description": "If true, calling prev or next when there is no previous or next match (respectively) from the current point will make the search loop to the end and beginning of the document, respectively."
+          }
+        }
       }
     ]
   },
