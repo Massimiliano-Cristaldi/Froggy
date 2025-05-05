@@ -40,6 +40,8 @@ Advanced macros include:
 - last(chars) e.g. lastdb = find last occurrence of one or more characters
 - def(chars) e.g. defdb = go to definition of a given symbol
 - err = go to the next syntax error in the text document, looping back to the first if there is no next occurrence
+- str = set current selection to the whole string, provided the text cursor is inside a string; currently does not support multiline strings
+- bra = set current selection to the current bracket scope, provided the text cursor is between brackets
 
 Commands that take a string as argument can be run without any arguments if you have some text selected, in which case the current selection will be passed as an argument to that command (e.g. 'next' will find the next occurrence of the currently selected text).
 These commands will move the text cursor to the beginning of the occurrence by default, but they can be preceded by an 's' to indicate that you want to select that text instead: for example 'sprevdb' will select the previous occurrence of 'db' rather than placing the cursor before the d.

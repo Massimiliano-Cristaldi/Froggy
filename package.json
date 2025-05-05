@@ -3,8 +3,8 @@
   "publisher": "badlvckinc",
   "icon": "froggy.png",
   "displayName": "Froggy",
-  "description": "An extension for quick movement of the text cursor",
-  "version": "2.2.0",
+  "description": "An extension for quick document navigation and manipulation, featuring new shortcuts and a prompt for complex, but short and intuitive macros.",
+  "version": "2.3.0",
   "engines": {
     "vscode": "^1.96.0"
   },
