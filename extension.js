@@ -156,7 +156,7 @@ function activate(context) {
 		vscode.commands.registerCommand('badlvckinc.SelectUpTen', ()=>{selectMacro('up', 10)}),
 		vscode.commands.registerCommand('badlvckinc.SelectDownTen', ()=>{selectMacro('down', 10)}),
 		vscode.commands.registerCommand('badlvckinc.ExpandSelectionToLineStart', ()=>{expandSelectionToLineStart()}),
-		vscode.commands.registerCommand('badlvckinc.ExpandSelectionToLineEnd', ()=>{expandSelectionToLineEnd}),
+		vscode.commands.registerCommand('badlvckinc.ExpandSelectionToLineEnd', ()=>{expandSelectionToLineEnd()}),
 		vscode.commands.registerCommand('badlvckinc.FroggyPrompt', ()=>{startPrompt()}),
 		vscode.commands.registerCommand('badlvckinc.RepeatLastCommand', ()=>{lastCommand()})
 	]	
