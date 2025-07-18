@@ -1,37 +1,10 @@
 const vscode = require('vscode');
 
-/**
- * @param {vscode.ExtensionContext} context
- */
-function goToMacro(lineNumber, isFixedReference = true){
-    const editor = vscode.window.activeTextEditor;
-
-    const destinationIndex = editor.document.lineCount >= lineNumber ? lineNumber : editor.document.lineCount;
-    editor.selection = new vscode.Selection(
-        new vscode.Position(destinationIndex, 0),
-        new vscode.Position(destinationIndex, 0)
-    );
-
-    vscode.commands.executeCommand('revealLine', {
-        lineNumber: destinationIndex,
-        at: 'center'
-    });
-
-    const fixedLastCommand = ()=>{goToMacro(lineNumber)};
-    const dynamicLastCommand = ()=>{
-        const editor = vscode.window.activeTextEditor;
-        const lastLineIndex = editor.document.lineCount - 1;
-        goToMacro(lastLineIndex, false);
-    }
-    const newLastCommand = isFixedReference ? fixedLastCommand : dynamicLastCommand;
-    return newLastCommand;
-};
-
-function goToLineStart(){
+function goToLineStart() {
     const editor = vscode.window.activeTextEditor;
 
     if (!editor) {
-        return null;
+        return;
     }
 
     const currentLine = editor.selection.start.line;
@@ -43,11 +16,11 @@ function goToLineStart(){
     editor.selection = cursorAtStart; 
 }
 
-function goToLineEnd(){
+function goToLineEnd() {
         const editor = vscode.window.activeTextEditor;
 
         if (!editor) {
-            return null;
+            return;
         }
 
         const currentLine = editor.selection.end.line;
@@ -60,7 +33,6 @@ function goToLineEnd(){
     }
 
 module.exports = {
-    goToMacro,
     goToLineStart,
     goToLineEnd,
 }

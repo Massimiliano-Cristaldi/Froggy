@@ -1,10 +1,9 @@
 {
   "name": "froggy",
   "publisher": "badlvckinc",
-  "icon": "froggy.png",
   "displayName": "Froggy",
-  "description": "An extension for quick document navigation and manipulation, featuring new shortcuts and a prompt for complex, but short and intuitive macros.",
-  "version": "2.3.0",
+  "description": "An extension for quick document navigation and manipulation.",
+  "version": "3.0.0",
   "engines": {
     "vscode": "^1.96.0"
   },
@@ -18,23 +17,39 @@
   "contributes": {
     "keybindings": [
       {
-          "command": "badlvckinc.UpFive",
           "key": "ctrl+up",
+          "command": "badlvckinc.Move",
+          "args": {
+            "leapDistance": 5,
+            "direction": "up"
+          },
           "when": "editorTextFocus"
       },
       {
-          "command": "badlvckinc.UpTen",
           "key": "ctrl+alt+up",
+          "command": "badlvckinc.Move",
+          "args": {
+            "leapDistance": 10,
+            "direction": "up"
+          },
           "when": "editorTextFocus"
       },
       {
-          "command": "badlvckinc.DownFive",
           "key": "ctrl+down",
+          "command": "badlvckinc.Move",
+          "args": {
+            "leapDistance": 5,
+            "direction": "down"
+          },
           "when": "editorTextFocus"
       },
       {
-          "command": "badlvckinc.DownTen",
           "key": "ctrl+alt+down",
+          "command": "badlvckinc.Move",
+          "args": {
+            "leapDistance": 10,
+            "direction": "down"
+          },
           "when": "editorTextFocus"
       },
       {
@@ -48,33 +63,57 @@
           "when": "editorTextFocus"
       },
       {
-        "command": "badlvckinc.SelectUpOne",
         "key": "shift+up",
+        "command": "badlvckinc.Select",
+        "args": {
+          "leapDistance": 1,
+          "direction": "up"
+        },
         "when": "editorTextFocus"
       },
       {
-        "command": "badlvckinc.SelectDownOne",
         "key": "shift+down",
+        "command": "badlvckinc.Select",
+        "args": {
+          "leapDistance": 1,
+          "direction": "down"
+        },
         "when": "editorTextFocus"
       },
       {
-        "command": "badlvckinc.SelectUpFive",
         "key": "ctrl+shift+up",
+        "command": "badlvckinc.Select",
+        "args": {
+          "leapDistance": 5,
+          "direction": "up"
+        },
         "when": "editorTextFocus"
       },
       {
-        "command": "badlvckinc.SelectDownFive",
         "key": "ctrl+shift+down",
+        "command": "badlvckinc.Select",
+        "args": {
+          "leapDistance": 5,
+          "direction": "down"
+        },
         "when": "editorTextFocus"
       },
       {
-        "command": "badlvckinc.SelectUpTen",
         "key": "ctrl+alt+shift+up",
+        "command": "badlvckinc.Select",
+        "args": {
+          "leapDistance": 10,
+          "direction": "up"
+        },
         "when": "editorTextFocus"
       },
       {
-        "command": "badlvckinc.SelectDownTen",
         "key": "ctrl+alt+shift+down",
+        "command": "badlvckinc.Select",
+        "args": {
+          "leapDistance": 10,
+          "direction": "down"
+        },
         "when": "editorTextFocus"
       },
       {
@@ -88,13 +127,57 @@
         "when": "editorTextFocus"
       },
       {
-        "command": "badlvckinc.FroggyPrompt",
-        "key": "ctrl+alt+numpad6",
+        "command": "badlvckinc.Skip",
+        "key": "ctrl+numpad1",
+        "args": {
+          "skipCount": 1,
+          "direction": "left"
+        },
         "when": "editorTextFocus"
       },
       {
-        "command": "badlvckinc.RepeatLastCommand",
-        "key": "ctrl+alt+numpad5",
+        "command": "badlvckinc.Skip",
+        "key": "ctrl+alt+numpad1",
+        "args": {
+          "skipCount": 1,
+          "direction": "right"
+        },
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "badlvckinc.Skip",
+        "key": "ctrl+numpad2",
+        "args": {
+          "skipCount": 2,
+          "direction": "left"
+        },
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "badlvckinc.Skip",
+        "key": "ctrl+alt+numpad2",
+        "args": {
+          "skipCount": 2,
+          "direction": "right"
+        },
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "badlvckinc.Skip",
+        "key": "ctrl+numpad3",
+        "args": {
+          "skipCount": 3,
+          "direction": "left"
+        },
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "badlvckinc.Skip",
+        "key": "ctrl+alt+numpad3",
+        "args": {
+          "skipCount": 3,
+          "direction": "right"
+        },
         "when": "editorTextFocus"
       }
     ],

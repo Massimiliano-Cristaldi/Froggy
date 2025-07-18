@@ -1,13 +1,13 @@
 const vscode = require('vscode');
 
-/**
- * @param {vscode.ExtensionContext} context
- */
-function selectMacro(direction, leapDistance, updateHistory = false){
+function selectMacro(args) {
     const editor = vscode.window.activeTextEditor;
     if (!editor) {
-        return null;
+        return;
     }
+
+    const leapDistance = args["leapDistance"];
+    const direction = args["direction"];
 
     const lineCount = editor.document.lineCount;
     const selectionStartLine = editor.selection.start.line;
@@ -34,18 +34,13 @@ function selectMacro(direction, leapDistance, updateHistory = false){
         lineNumber: leapLineNumber,
         at: 'center'
     });
-
-    if (updateHistory) {
-        newLastCommand = ()=>{selectMacro(direction, leapDistance, updateHistory)};
-        return newLastCommand;
-    }
 };
 
-function expandSelectionToLineStart(){
+function expandSelectionToLineStart() {
     const editor = vscode.window.activeTextEditor;
 
     if (!editor) {
-        return null;
+        return;
     }
 
     const startLine = editor.selection.start.line;
@@ -58,11 +53,11 @@ function expandSelectionToLineStart(){
     editor.selection = extendedSelection;
 }
 
-function expandSelectionToLineEnd(){
+function expandSelectionToLineEnd() {
     const editor = vscode.window.activeTextEditor;
 
     if (!editor) {
-        return null;
+        return;
     }
 
     const startLine = editor.selection.start.line;

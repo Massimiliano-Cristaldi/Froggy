@@ -1,13 +1,13 @@
 const vscode = require('vscode');
 
-/**
- * @param {vscode.ExtensionContext} context
- */
-function moveMacro(direction, leapDistance){
+function moveMacro(args) {
     const editor = vscode.window.activeTextEditor;
     if (!editor) {
-        return null;
+        return;
     }
+
+    const leapDistance = args["leapDistance"];
+    const direction = args["direction"];
 
     const startLine = editor.selection.start.line;
     const endLine = editor.selection.end.line;
@@ -21,12 +21,57 @@ function moveMacro(direction, leapDistance){
         lineNumber: newLine,
         at: 'center'
     });
-
-    
-    const newLastCommand = ()=>{moveMacro(direction, leapDistance)};
-    return newLastCommand;
 };
 
+function getNthWhitespaceOffset(currentLineIndex, n, direction) {
+    const editor = vscode.window.activeTextEditor;
+
+    const startingCharIndex = editor.selection.start.character;
+    const textAtCurrentLine = editor.document.lineAt(currentLineIndex).text;
+
+    const zeroIndex = editor.document.lineAt(currentLineIndex).firstNonWhitespaceCharacterIndex;
+    const lastCharIndex = textAtCurrentLine.length;
+    let currentCharIndex = startingCharIndex;
+
+    while (true) {
+        currentCharIndex += direction == "right" ? 1 : -1;
+        
+        if (currentCharIndex < zeroIndex) {
+            return zeroIndex;
+        } else if (currentCharIndex > lastCharIndex) {
+            return lastCharIndex;
+        }
+
+        const currentChar = textAtCurrentLine[currentCharIndex];
+
+        if (currentChar == " ") {
+            n--;
+        }
+
+        if (n == 0) {
+            return currentCharIndex;
+        }
+    }
+}
+
+function skipWordMacro(args) {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor) {
+        return;
+    }
+
+    const skipCount = args["skipCount"];
+    const direction = args["direction"];
+
+    const currentLineIndex = editor.selection.start.line;
+
+    const destCharIndex = getNthWhitespaceOffset(currentLineIndex, skipCount, direction);
+    const destPosition = new vscode.Position(currentLineIndex, destCharIndex);
+
+    editor.selection = new vscode.Selection(destPosition, destPosition);
+}
+
 module.exports = {
-    moveMacro
+    moveMacro,
+    skipWordMacro
 }
