@@ -3,7 +3,7 @@
   "publisher": "badlvckinc",
   "displayName": "Froggy",
   "description": "An extension for quick document navigation and manipulation.",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "engines": {
     "vscode": "^1.96.0"
   },
@@ -18,7 +18,7 @@
     "keybindings": [
       {
           "key": "ctrl+up",
-          "command": "badlvckinc.Move",
+          "command": "badlvckinc.Jump",
           "args": {
             "leapDistance": 5,
             "direction": "up"
@@ -27,7 +27,7 @@
       },
       {
           "key": "ctrl+alt+up",
-          "command": "badlvckinc.Move",
+          "command": "badlvckinc.Jump",
           "args": {
             "leapDistance": 10,
             "direction": "up"
@@ -36,7 +36,7 @@
       },
       {
           "key": "ctrl+down",
-          "command": "badlvckinc.Move",
+          "command": "badlvckinc.Jump",
           "args": {
             "leapDistance": 5,
             "direction": "down"
@@ -45,7 +45,7 @@
       },
       {
           "key": "ctrl+alt+down",
-          "command": "badlvckinc.Move",
+          "command": "badlvckinc.Jump",
           "args": {
             "leapDistance": 10,
             "direction": "down"
@@ -61,6 +61,42 @@
           "command": "badlvckinc.GoToLineEnd",
           "key": "ctrl+alt+right",
           "when": "editorTextFocus"
+      },
+      {
+        "key": "ctrl+numpad1",
+        "command": "badlvckinc.Skip",
+        "args": {
+          "skipCount": 1,
+          "direction": "left"
+        },
+        "when": "editorTextFocus"
+      },
+      {
+        "key": "ctrl+alt+numpad1",
+        "command": "badlvckinc.Skip",
+        "args": {
+          "skipCount": 2,
+          "direction": "left"
+        },
+        "when": "editorTextFocus"
+      },
+      {
+        "key": "ctrl+numpad3",
+        "command": "badlvckinc.Skip",
+        "args": {
+          "skipCount": 1,
+          "direction": "right"
+        },
+        "when": "editorTextFocus"
+      },
+      {
+        "key": "ctrl+alt+numpad3",
+        "command": "badlvckinc.Skip",
+        "args": {
+          "skipCount": 2,
+          "direction": "right"
+        },
+        "when": "editorTextFocus"
       },
       {
         "key": "shift+up",
@@ -117,80 +153,20 @@
         "when": "editorTextFocus"
       },
       {
-        "command": "badlvckinc.ExpandSelectionToLineStart",
         "key": "ctrl+alt+shift+left",
+        "command": "badlvckinc.ExpandSelectionToLineStart",
         "when": "editorTextFocus"
       },
       {
-        "command": "badlvckinc.ExpandSelectionToLineEnd",
         "key": "ctrl+alt+shift+right",
-        "when": "editorTextFocus"
-      },
-      {
-        "command": "badlvckinc.Skip",
-        "key": "ctrl+numpad1",
-        "args": {
-          "skipCount": 1,
-          "direction": "left"
-        },
-        "when": "editorTextFocus"
-      },
-      {
-        "command": "badlvckinc.Skip",
-        "key": "ctrl+alt+numpad1",
-        "args": {
-          "skipCount": 1,
-          "direction": "right"
-        },
-        "when": "editorTextFocus"
-      },
-      {
-        "command": "badlvckinc.Skip",
-        "key": "ctrl+numpad2",
-        "args": {
-          "skipCount": 2,
-          "direction": "left"
-        },
-        "when": "editorTextFocus"
-      },
-      {
-        "command": "badlvckinc.Skip",
-        "key": "ctrl+alt+numpad2",
-        "args": {
-          "skipCount": 2,
-          "direction": "right"
-        },
-        "when": "editorTextFocus"
-      },
-      {
-        "command": "badlvckinc.Skip",
-        "key": "ctrl+numpad3",
-        "args": {
-          "skipCount": 3,
-          "direction": "left"
-        },
-        "when": "editorTextFocus"
-      },
-      {
-        "command": "badlvckinc.Skip",
-        "key": "ctrl+alt+numpad3",
-        "args": {
-          "skipCount": 3,
-          "direction": "right"
-        },
+        "command": "badlvckinc.ExpandSelectionToLineEnd",
         "when": "editorTextFocus"
       }
     ],
     "configuration":[
       {
         "title": "froggy",
-        "properties": {
-          "froggy.findMacroLoops": {
-            "type": "boolean",
-            "default": true,
-            "description": "If true, calling prev or next when there is no previous or next match (respectively) from the current point will make the search loop to the end and beginning of the document, respectively."
-          }
-        }
+        "properties": {}
       }
     ]
   },

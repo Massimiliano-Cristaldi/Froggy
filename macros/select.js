@@ -1,7 +1,8 @@
-const vscode = require('vscode');
+const vscode = require("vscode");
 
-function selectMacro(args) {
+function selectTo(args) {
     const editor = vscode.window.activeTextEditor;
+    
     if (!editor) {
         return;
     }
@@ -10,12 +11,16 @@ function selectMacro(args) {
     const direction = args["direction"];
 
     const lineCount = editor.document.lineCount;
+
     const selectionStartLine = editor.selection.start.line;
     const selectionEndLine = editor.selection.end.line;
-    const leapLineNumber = direction == 'up' ? Math.max(selectionStartLine - leapDistance, 0) : Math.min(selectionEndLine + leapDistance, lineCount - 1);
+
+    const leapLineNumber = direction == "up" ? Math.max(selectionStartLine - leapDistance, 0) : Math.min(selectionEndLine + leapDistance, lineCount - 1);
+
     const selectionHeight = selectionEndLine - selectionStartLine + 1;
     const selectionLength = editor.document.getText(editor.selection).length;
     var textLength = 0;
+
     for (let i = 0; i < selectionHeight; i++) {
         textLength += editor.document.lineAt(editor.selection.end.line - i).text.length;
     }
@@ -25,14 +30,14 @@ function selectMacro(args) {
         const endPosition = new vscode.Position(selectionEndLine, textLength);
         editor.selection = new vscode.Selection(startPosition, endPosition);
     } else {
-        const startPosition = new vscode.Position(direction == 'up' ? leapLineNumber : selectionStartLine, 0);
-        const endPosition = new vscode.Position(direction == 'up' ? selectionEndLine : leapLineNumber, textLength);
+        const startPosition = new vscode.Position(direction == "up" ? leapLineNumber : selectionStartLine, 0);
+        const endPosition = new vscode.Position(direction == "up" ? selectionEndLine : leapLineNumber, textLength);
         editor.selection = new vscode.Selection(startPosition, endPosition);
     }
 
-    vscode.commands.executeCommand('revealLine', {
+    vscode.commands.executeCommand("revealLine", {
         lineNumber: leapLineNumber,
-        at: 'center'
+        at: "center"
     });
 };
 
@@ -72,7 +77,7 @@ function expandSelectionToLineEnd() {
 }
 
 module.exports = {
-    selectMacro,
+    selectTo,
     expandSelectionToLineStart,
     expandSelectionToLineEnd
 }
