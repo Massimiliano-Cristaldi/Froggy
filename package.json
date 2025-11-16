@@ -3,7 +3,7 @@
   "publisher": "badlvckinc",
   "displayName": "Froggy",
   "description": "An extension for quick document navigation and manipulation.",
-  "version": "3.1.0",
+  "version": "3.2.0",
   "engines": {
     "vscode": "^1.96.0"
   },
@@ -17,50 +17,50 @@
   "contributes": {
     "keybindings": [
       {
-          "key": "ctrl+up",
-          "command": "badlvckinc.Jump",
-          "args": {
-            "leapDistance": 5,
-            "direction": "up"
-          },
-          "when": "editorTextFocus"
+        "key": "ctrl+up",
+        "command": "badlvckinc.Jump",
+        "args": {
+          "leapDistance": 5,
+          "direction": "up"
+        },
+        "when": "editorTextFocus"
       },
       {
-          "key": "ctrl+alt+up",
-          "command": "badlvckinc.Jump",
-          "args": {
-            "leapDistance": 10,
-            "direction": "up"
-          },
-          "when": "editorTextFocus"
+        "key": "ctrl+alt+up",
+        "command": "badlvckinc.Jump",
+        "args": {
+          "leapDistance": 10,
+          "direction": "up"
+        },
+        "when": "editorTextFocus"
       },
       {
-          "key": "ctrl+down",
-          "command": "badlvckinc.Jump",
-          "args": {
-            "leapDistance": 5,
-            "direction": "down"
-          },
-          "when": "editorTextFocus"
+        "key": "ctrl+down",
+        "command": "badlvckinc.Jump",
+        "args": {
+          "leapDistance": 5,
+          "direction": "down"
+        },
+        "when": "editorTextFocus"
       },
       {
-          "key": "ctrl+alt+down",
-          "command": "badlvckinc.Jump",
-          "args": {
-            "leapDistance": 10,
-            "direction": "down"
-          },
-          "when": "editorTextFocus"
+        "key": "ctrl+alt+down",
+        "command": "badlvckinc.Jump",
+        "args": {
+          "leapDistance": 10,
+          "direction": "down"
+        },
+        "when": "editorTextFocus"
       },
       {
-          "command": "badlvckinc.GoToLineStart",
-          "key": "ctrl+alt+left",
-          "when": "editorTextFocus"
+        "command": "badlvckinc.GoToLineStart",
+        "key": "ctrl+alt+left",
+        "when": "editorTextFocus"
       },
       {
-          "command": "badlvckinc.GoToLineEnd",
-          "key": "ctrl+alt+right",
-          "when": "editorTextFocus"
+        "command": "badlvckinc.GoToLineEnd",
+        "key": "ctrl+alt+right",
+        "when": "editorTextFocus"
       },
       {
         "key": "ctrl+numpad1",
@@ -163,7 +163,7 @@
         "when": "editorTextFocus"
       }
     ],
-    "configuration":[
+    "configuration": [
       {
         "title": "froggy",
         "properties": {}
@@ -176,11 +176,14 @@
     "test": "vscode-test"
   },
   "devDependencies": {
-    "@types/vscode": "^1.96.0",
     "@types/mocha": "^10.0.10",
     "@types/node": "20.x",
-    "eslint": "^9.16.0",
+    "@types/vscode": "^1.96.0",
     "@vscode/test-cli": "^0.0.10",
-    "@vscode/test-electron": "^2.4.1"
+    "@vscode/test-electron": "^2.4.1",
+    "eslint": "^9.16.0"
+  },
+  "dependencies": {
+    "node-global-key-listener": "^0.3.0"
   }
 }

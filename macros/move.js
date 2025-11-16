@@ -12,7 +12,7 @@ function jumpTo(args) {
     const startLine = editor.selection.start.line;
     const endLine = editor.selection.end.line;
     const lineCount = editor.document.lineCount - 1;
-    const newLine = direction == "up" ? Math.max(startLine - leapDistance, 0) : Math.min(endLine + leapDistance, lineCount);
+    const newLine = direction === "up" ? Math.max(startLine - leapDistance, 0) : Math.min(endLine + leapDistance, lineCount);
     const textLength = editor.document.lineAt(startLine).text.length;
     const newPos = new vscode.Position(newLine, textLength);
     editor.selection = new vscode.Selection(newPos, newPos); 
@@ -51,7 +51,7 @@ function getNthWhitespaceOffset(currentLineIndex, n, direction) {
     let currentCharIndex = startingCharIndex;
 
     while (true) {
-        currentCharIndex += direction == "right" ? 1 : -1;
+        currentCharIndex += direction === "right" ? 1 : -1;
         
         if (currentCharIndex < zeroIndex) {
             return zeroIndex;
@@ -61,11 +61,11 @@ function getNthWhitespaceOffset(currentLineIndex, n, direction) {
 
         const currentChar = textAtCurrentLine[currentCharIndex];
 
-        if (currentChar == " ") {
+        if (currentChar === " ") {
             n--;
         }
 
-        if (n == 0) {
+        if (n === 0) {
             return currentCharIndex;
         }
     }
