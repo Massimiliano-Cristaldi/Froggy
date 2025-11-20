@@ -34,7 +34,7 @@ function highlightLines(range) {
         ranges.push(upRange);
     }
 
-    if (lineDownIndex !== lastLineIndex) {
+    if (lineDownIndex !== currentLineIndex) {
         const downRange = new vscode.Range(
             new vscode.Position(lineDownIndex, 0),
             new vscode.Position(lineDownIndex, 0)
