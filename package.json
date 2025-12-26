@@ -20,7 +20,7 @@
         "key": "ctrl+up",
         "command": "badlvckinc.Jump",
         "args": {
-          "leapDistance": 5,
+          "distance": 5,
           "direction": "up"
         },
         "when": "editorTextFocus"
@@ -29,7 +29,7 @@
         "key": "ctrl+alt+up",
         "command": "badlvckinc.Jump",
         "args": {
-          "leapDistance": 10,
+          "distance": 10,
           "direction": "up"
         },
         "when": "editorTextFocus"
@@ -38,7 +38,7 @@
         "key": "ctrl+down",
         "command": "badlvckinc.Jump",
         "args": {
-          "leapDistance": 5,
+          "distance": 5,
           "direction": "down"
         },
         "when": "editorTextFocus"
@@ -47,8 +47,24 @@
         "key": "ctrl+alt+down",
         "command": "badlvckinc.Jump",
         "args": {
-          "leapDistance": 10,
+          "distance": 10,
           "direction": "down"
+        },
+        "when": "editorTextFocus"
+      },
+      {
+        "key": "alt+right",
+        "command": "badlvckinc.CaseSmartJump",
+        "args": {
+          "direction": "right"
+        },
+        "when": "editorTextFocus"
+      },
+      {
+        "key": "alt+left",
+        "command": "badlvckinc.CaseSmartJump",
+        "args": {
+          "direction": "left"
         },
         "when": "editorTextFocus"
       },
@@ -102,7 +118,7 @@
         "key": "shift+up",
         "command": "badlvckinc.Select",
         "args": {
-          "leapDistance": 1,
+          "distance": 1,
           "direction": "up"
         },
         "when": "editorTextFocus"
@@ -111,7 +127,7 @@
         "key": "shift+down",
         "command": "badlvckinc.Select",
         "args": {
-          "leapDistance": 1,
+          "distance": 1,
           "direction": "down"
         },
         "when": "editorTextFocus"
@@ -120,7 +136,7 @@
         "key": "ctrl+shift+up",
         "command": "badlvckinc.Select",
         "args": {
-          "leapDistance": 5,
+          "distance": 5,
           "direction": "up"
         },
         "when": "editorTextFocus"
@@ -129,7 +145,7 @@
         "key": "ctrl+shift+down",
         "command": "badlvckinc.Select",
         "args": {
-          "leapDistance": 5,
+          "distance": 5,
           "direction": "down"
         },
         "when": "editorTextFocus"
@@ -138,7 +154,7 @@
         "key": "ctrl+alt+shift+up",
         "command": "badlvckinc.Select",
         "args": {
-          "leapDistance": 10,
+          "distance": 10,
           "direction": "up"
         },
         "when": "editorTextFocus"
@@ -147,7 +163,7 @@
         "key": "ctrl+alt+shift+down",
         "command": "badlvckinc.Select",
         "args": {
-          "leapDistance": 10,
+          "distance": 10,
           "direction": "down"
         },
         "when": "editorTextFocus"
@@ -160,6 +176,22 @@
       {
         "key": "ctrl+alt+shift+right",
         "command": "badlvckinc.ExpandSelectionToLineEnd",
+        "when": "editorTextFocus"
+      },
+      {
+        "key": "alt+shift+left",
+        "command": "badlvckinc.CaseSmartSelect",
+        "args": {
+          "direction": "left"
+        },
+        "when": "editorTextFocus"
+      },
+      {
+        "key": "alt+shift+right",
+        "command": "badlvckinc.CaseSmartSelect",
+        "args": {
+          "direction": "right"
+        },
         "when": "editorTextFocus"
       }
     ],
@@ -174,14 +206,6 @@
     "lint": "eslint .",
     "pretest": "npm run lint",
     "test": "vscode-test"
-  },
-  "devDependencies": {
-    "@types/mocha": "^10.0.10",
-    "@types/node": "20.x",
-    "@types/vscode": "^1.96.0",
-    "@vscode/test-cli": "^0.0.10",
-    "@vscode/test-electron": "^2.4.1",
-    "eslint": "^9.16.0"
   },
   "dependencies": {
     "node-global-key-listener": "^0.3.0"

@@ -1,4 +1,5 @@
 const vscode = require("vscode");
+const getNthCharOccurrence = require("./_common").getNthCharOccurrence;
 
 function jumpTo(args) {
     const editor = vscode.window.activeTextEditor;
@@ -6,22 +7,44 @@ function jumpTo(args) {
         return;
     }
 
-    const leapDistance = args["leapDistance"];
+    const distance = args["distance"];
     const direction = args["direction"];
 
     const startLine = editor.selection.start.line;
     const endLine = editor.selection.end.line;
+
+    const currentLine = editor.selection.isReversed ? startLine : endLine;
     const lineCount = editor.document.lineCount - 1;
-    const newLine = direction === "up" ? Math.max(startLine - leapDistance, 0) : Math.min(endLine + leapDistance, lineCount);
-    const textLength = editor.document.lineAt(startLine).text.length;
+
+    const newLine = direction === "up" ? 
+                    Math.max(currentLine - distance, 0) : 
+                    Math.min(currentLine + distance, lineCount);
+    
+    const textLength = editor.document.lineAt(currentLine).text.length;
     const newPos = new vscode.Position(newLine, textLength);
-    editor.selection = new vscode.Selection(newPos, newPos); 
+
+    editor.selection = new vscode.Selection(newPos, newPos);
     
     vscode.commands.executeCommand("revealLine", {
         lineNumber: newLine,
         at: "center"
     });
-};
+}
+
+function caseSmartJumpTo(args) {
+    const editor = vscode.window.activeTextEditor;
+
+    if (!editor) {
+        return;
+    }
+
+    const direction = args["direction"];
+
+    const currentLineIndex = editor.selection.start.line;
+    const destPosition = getNthCharOccurrence("[A-Z_\\s\"',\\.\\(\\)\\[\\]\\{\\}]", 1, direction, false, true);
+
+    editor.selection = new vscode.Selection(destPosition, destPosition);
+}
 
 function skipTo(args) {
     const editor = vscode.window.activeTextEditor;
@@ -33,45 +56,13 @@ function skipTo(args) {
     const direction = args["direction"];
 
     const currentLineIndex = editor.selection.start.line;
-
-    const destCharIndex = getNthWhitespaceOffset(currentLineIndex, skipCount, direction);
-    const destPosition = new vscode.Position(currentLineIndex, destCharIndex);
+    const destPosition = getNthCharOccurrence(" ", skipCount, direction, false);
 
     editor.selection = new vscode.Selection(destPosition, destPosition);
 }
 
-function getNthWhitespaceOffset(currentLineIndex, n, direction) {
-    const editor = vscode.window.activeTextEditor;
-
-    const startingCharIndex = editor.selection.start.character;
-    const textAtCurrentLine = editor.document.lineAt(currentLineIndex).text;
-
-    const zeroIndex = editor.document.lineAt(currentLineIndex).firstNonWhitespaceCharacterIndex;
-    const lastCharIndex = textAtCurrentLine.length;
-    let currentCharIndex = startingCharIndex;
-
-    while (true) {
-        currentCharIndex += direction === "right" ? 1 : -1;
-        
-        if (currentCharIndex < zeroIndex) {
-            return zeroIndex;
-        } else if (currentCharIndex > lastCharIndex) {
-            return lastCharIndex;
-        }
-
-        const currentChar = textAtCurrentLine[currentCharIndex];
-
-        if (currentChar === " ") {
-            n--;
-        }
-
-        if (n === 0) {
-            return currentCharIndex;
-        }
-    }
-}
-
 module.exports = {
     jumpTo,
+    caseSmartJumpTo,
     skipTo
 }

@@ -3,10 +3,14 @@ const { fork } = require("child_process");
 const path = require("path");
 
 const jumpTo = require("./macros/move").jumpTo;
+const caseSmartJumpTo = require("./macros/move").caseSmartJumpTo;
 const skipTo = require("./macros/move").skipTo;
+
 const selectTo = require("./macros/select").selectTo;
+const caseSmartSelectTo = require("./macros/select").caseSmartSelectTo;
 const expandSelectionToLineStart = require("./macros/select").expandSelectionToLineStart;
 const expandSelectionToLineEnd = require("./macros/select").expandSelectionToLineEnd;
+
 const goToLineStart = require("./macros/goto").goToLineStart;
 const goToLineEnd = require("./macros/goto").goToLineEnd;
 
@@ -20,14 +24,18 @@ function activate(context) {
 	keyboardEventListener.on("message", (event) => { lineHighlightService.handleHighlights(event) });
 	vscode.window.onDidChangeTextEditorSelection(() => { lineHighlightService.refreshHighlights() });
 
+	const register = vscode.commands.registerCommand;
+	
 	const subscriptions = [
-		vscode.commands.registerCommand("badlvckinc.Jump", (args) => { jumpTo(args) }),
-		vscode.commands.registerCommand("badlvckinc.Skip", (args) => { skipTo(args) }),
-		vscode.commands.registerCommand("badlvckinc.Select", (args) => { selectTo(args) }),
-		vscode.commands.registerCommand("badlvckinc.ExpandSelectionToLineStart", () => { expandSelectionToLineStart() }),
-		vscode.commands.registerCommand("badlvckinc.ExpandSelectionToLineEnd", () => { expandSelectionToLineEnd() }),
-		vscode.commands.registerCommand("badlvckinc.GoToLineStart", () => { goToLineStart() }),
-		vscode.commands.registerCommand("badlvckinc.GoToLineEnd", () => { goToLineEnd() }),
+		register("badlvckinc.Jump", (args) => { jumpTo(args) }),
+		register("badlvckinc.CaseSmartJump", (args) => { caseSmartJumpTo(args) }),
+		register("badlvckinc.Skip", (args) => { skipTo(args) }),
+		register("badlvckinc.Select", (args) => { selectTo(args) }),
+		register("badlvckinc.CaseSmartSelect", (args) => { caseSmartSelectTo(args) }),
+		register("badlvckinc.ExpandSelectionToLineStart", () => { expandSelectionToLineStart() }),
+		register("badlvckinc.ExpandSelectionToLineEnd", () => { expandSelectionToLineEnd() }),
+		register("badlvckinc.GoToLineStart", () => { goToLineStart() }),
+		register("badlvckinc.GoToLineEnd", () => { goToLineEnd() }),
 	]
 
 	context.subscriptions.push(

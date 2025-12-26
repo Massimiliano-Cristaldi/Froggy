@@ -1,4 +1,5 @@
 const vscode = require("vscode");
+const getNthCharOccurrence = require("./_common").getNthCharOccurrence;
 
 function selectTo(args) {
     const editor = vscode.window.activeTextEditor;
@@ -7,7 +8,7 @@ function selectTo(args) {
         return;
     }
 
-    const leapDistance = args["leapDistance"];
+    const distance = args["distance"];
     const direction = args["direction"];
 
     const selectionStartLine = editor.selection.start.line;
@@ -21,7 +22,7 @@ function selectTo(args) {
         textLength += editor.document.lineAt(editor.selection.end.line - i).text.length;
     }
 
-    const isPartialLineSelection = selectionLength < textLength && leapDistance === 1;
+    const isPartialLineSelection = selectionLength < textLength && distance === 1;
 
     if (isPartialLineSelection) {
         let startPosition;
@@ -61,14 +62,14 @@ function selectTo(args) {
             startPosition = new vscode.Position(selectionEndLine, startColumn);
 
             targetColumn = 0;
-            targetLine = Math.max(selectionStartLine - leapDistance, 0);
+            targetLine = Math.max(selectionStartLine - distance, 0);
             targetPosition = new vscode.Position(targetLine, targetColumn)
         } else {
-            if (selectionHeight > leapDistance) {
+            if (selectionHeight > distance) {
                 startColumn = 0;
                 startPosition = new vscode.Position(selectionStartLine, startColumn);
                 
-                targetLine = Math.max(selectionEndLine - leapDistance, 0);
+                targetLine = Math.max(selectionEndLine - distance, 0);
                 targetColumn = editor.document.lineAt(targetLine).text.length;
                 targetPosition = new vscode.Position(targetLine, targetColumn)
             } else {
@@ -76,25 +77,25 @@ function selectTo(args) {
                 startColumn = editor.document.lineAt(newStartLine).text.length;
                 startPosition = new vscode.Position(newStartLine, startColumn);
                 
-                targetLine = Math.max(selectionEndLine - leapDistance, 0);
+                targetLine = Math.max(selectionEndLine - distance, 0);
                 targetColumn = 0;
                 targetPosition = new vscode.Position(targetLine, targetColumn)
             }
         }
     } else if (direction === "down") {
-        if (editor.selection.isReversed) {
-            if (selectionHeight > leapDistance) {
+        if (editor.selection.isReversed && !editor.selection.isEmpty) {
+            if (selectionHeight > distance) {
                 startColumn = editor.document.lineAt(selectionEndLine).text.length;
                 startPosition = new vscode.Position(selectionEndLine, startColumn);
                 
                 targetColumn = 0;
-                targetLine = Math.min(selectionStartLine + leapDistance, lastLine);
+                targetLine = Math.min(selectionStartLine + distance, lastLine);
                 targetPosition = new vscode.Position(targetLine, targetColumn)
             } else {
                 startColumn = 0;
                 startPosition = new vscode.Position(selectionEndLine + 1, startColumn);
                 
-                targetLine = Math.min(selectionStartLine + leapDistance, lastLine);
+                targetLine = Math.min(selectionStartLine + distance, lastLine);
                 targetColumn = editor.document.lineAt(targetLine).text.length;
                 targetPosition = new vscode.Position(targetLine, targetColumn)                
             }
@@ -102,7 +103,7 @@ function selectTo(args) {
             startColumn = 0;
             startPosition = new vscode.Position(selectionStartLine, startColumn);
 
-            targetLine = Math.min(selectionEndLine + leapDistance, lastLine);
+            targetLine = Math.min(selectionEndLine + distance, lastLine);
             targetColumn = editor.document.lineAt(targetLine).text.length;
             targetPosition = new vscode.Position(targetLine, targetColumn)
         }
@@ -114,7 +115,40 @@ function selectTo(args) {
         lineNumber: targetLine,
         at: "center"
     });
-};
+}
+
+function caseSmartSelectTo(args) {
+    const editor = vscode.window.activeTextEditor;
+
+    if (!editor) {
+        return;
+    }
+
+    const direction = args["direction"];
+    const charMatch = "[A-Z_-\\s\"';,\\.\\(\\)\\[\\]\\{\\}]";
+
+    let startLine = editor.selection.start.line;
+    let startChar = editor.selection.start.character;
+    const lastCharAtStartLine = editor.document.lineAt(startLine).text.length; 
+
+    let endLine = editor.selection.end.line;
+    let endChar = editor.selection.end.character;
+    const lastCharAtEndLine = editor.document.lineAt(endLine).text.length; 
+
+    const lastLine = editor.document.lineCount - 1;
+
+    if (editor.selection.isReversed) {
+        const startPosition = new vscode.Position(endLine, endChar);
+        const destPosition = getNthCharOccurrence(charMatch, 1, direction, false, true);
+
+        editor.selection = new vscode.Selection(startPosition, destPosition);
+    } else {
+        const startPosition = new vscode.Position(startLine, startChar)
+        const destPosition = getNthCharOccurrence(charMatch, 1, direction, true, true);
+
+        editor.selection = new vscode.Selection(startPosition, destPosition);
+    }
+}
 
 function expandSelectionToLineStart() {
     const editor = vscode.window.activeTextEditor;
@@ -158,6 +192,7 @@ function expandSelectionToLineEnd() {
 
 module.exports = {
     selectTo,
+    caseSmartSelectTo,
     expandSelectionToLineStart,
     expandSelectionToLineEnd
 }

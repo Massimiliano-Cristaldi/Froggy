@@ -7,6 +7,10 @@ All movements have default keybindings:
 - go down 5 lines = ctrl + down
 - go up 10 lines = ctrl + alt + up
 - go down 10 lines = ctrl + alt + down
+- go to previous whitespace = ctrl + alt + 1
+- go to next whitespace = ctrl + alt + 3
+- go to previous word (case smart) = alt + left
+- go to next word (case smart) = alt + right
 - go to line start = ctrl + alt + left
 - go to line end = ctrl + alt + right
 - find the first/second/third whitespace on the left of the caret = ctrl + numpad1/numpad2/numpad3
@@ -15,6 +19,8 @@ All movements have default keybindings:
 - expand/shrink selection down by 5 lines = ctrl + shift + down
 - expand/shrink selection up by 10 lines = ctrl + alt + shift + up
 - expand/shrink selection down by 10 lines = ctrl + alt + shift + down
+- expand/shrink selection to previous word (case smart) = alt + shift + left
+- expand/shrink selection to next word (case smart) = alt + shift + right
 - expand selection to beginning of first line of the selection range = ctrl + alt + shift + left
 - expand selection to end of last line of the selection range = ctrl + alt + shift + right
 
