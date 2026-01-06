@@ -39,9 +39,7 @@ function caseSmartJumpTo(args) {
     }
 
     const direction = args["direction"];
-
-    const currentLineIndex = editor.selection.start.line;
-    const destPosition = getNthCharOccurrence("[A-Z_\\s\"',\\.\\(\\)\\[\\]\\{\\}]", 1, direction, false, true);
+    const destPosition = getNthCharOccurrence("[A-Z_\\s\"',;\\.\\(\\)\\[\\]\\{\\}$]", 1, direction, false);
 
     editor.selection = new vscode.Selection(destPosition, destPosition);
 }
@@ -55,7 +53,6 @@ function skipTo(args) {
     const skipCount = args["skipCount"];
     const direction = args["direction"];
 
-    const currentLineIndex = editor.selection.start.line;
     const destPosition = getNthCharOccurrence(" ", skipCount, direction, false);
 
     editor.selection = new vscode.Selection(destPosition, destPosition);

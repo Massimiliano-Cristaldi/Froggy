@@ -1,56 +1,48 @@
 const vscode = require("vscode");
 
-function getNthCharOccurrence(char, n, direction, fromEnd, checkNextLine) {
+function getNthCharOccurrence(char, n, direction, fromEnd) {
     const editor = vscode.window.activeTextEditor;
 
-    let currentLineIndex = fromEnd ? editor.selection.end.line : editor.selection.start.line;
-    let currentCharIndex = fromEnd ? editor.selection.end.character : editor.selection.start.character;
-    let textAtCurrentLine = editor.document.lineAt(currentLineIndex).text;
-
-    const zeroIndex = editor.document.lineAt(currentLineIndex).firstNonWhitespaceCharacterIndex;
-    const lastCharIndex = textAtCurrentLine.length;
+    const currentLineIndex = fromEnd ? editor.selection.end.line : editor.selection.start.line;
     const lastLineIndex = editor.document.lineCount - 1;
-
+    
+    const currentLine = editor.document.lineAt(currentLineIndex);
+    const textAtCurrentLine = currentLine.text;
+    
+    const zeroIndex = currentLine.firstNonWhitespaceCharacterIndex;
+    const lastCharIndex = textAtCurrentLine.length;
+    
     const charStep = direction === "right" ? 1 : -1;
-    const lineStep = direction === "right" && !editor.selection.isReversed ? 1 : -1;
+    let currentCharIndex = fromEnd ? editor.selection.end.character : editor.selection.start.character;
 
-    let nextLineChecked = false;
-
-    while (true) {
+    while (n !== 0) {
         currentCharIndex += charStep;
         
-        if (currentCharIndex < zeroIndex) {
-            if (direction === "left" && checkNextLine && !nextLineChecked && currentLineIndex != 0) {
-                currentLineIndex--;
-                textAtCurrentLine = editor.document.lineAt(currentLineIndex).text;
-                currentCharIndex = textAtCurrentLine.length - 1;
-                
-                nextLineChecked = true;
-            } else {
-                return new vscode.Position(currentLineIndex, zeroIndex);
-            }
+        if (currentCharIndex < zeroIndex && direction === "left" && currentLineIndex != 0) {
+            const newLastCharIndex = editor.document.lineAt(currentLineIndex - 1).text.length;
+            return new vscode.Position(currentLineIndex - 1, newLastCharIndex);
+        } else if (currentCharIndex === zeroIndex) {
+            return new vscode.Position(currentLineIndex, zeroIndex);
         } else if (currentCharIndex >= lastCharIndex) {
-            if (direction === "right" && checkNextLine && !nextLineChecked && currentLineIndex != lastLineIndex) {
-                currentLineIndex++;
-                textAtCurrentLine = editor.document.lineAt(currentLineIndex).text;
-                currentCharIndex = 0;
-
-                nextLineChecked = true;
-            } else {
-                return new vscode.Position(currentLineIndex, lastCharIndex);
+            if (direction === "right" && currentLineIndex != lastLineIndex) {
+                const newZeroIndex = editor.document.lineAt(currentLineIndex + 1).firstNonWhitespaceCharacterIndex;
+                return new vscode.Position(currentLineIndex + 1, newZeroIndex);
             }
+
+            return new vscode.Position(currentLineIndex, lastCharIndex);
+        }
+
+        if (textAtCurrentLine.length === 0) {
+            continue;
         }
 
         const currentChar = textAtCurrentLine[currentCharIndex];
-
         if (currentChar.match(new RegExp(char))) {
             n--;
         }
-
-        if (n === 0) {
-            return new vscode.Position(currentLineIndex, currentCharIndex);
-        }
     }
+    
+    return new vscode.Position(currentLineIndex, currentCharIndex);
 }
 
 module.exports = {

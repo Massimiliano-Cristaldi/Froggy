@@ -129,22 +129,18 @@ function caseSmartSelectTo(args) {
 
     let startLine = editor.selection.start.line;
     let startChar = editor.selection.start.character;
-    const lastCharAtStartLine = editor.document.lineAt(startLine).text.length; 
 
     let endLine = editor.selection.end.line;
     let endChar = editor.selection.end.character;
-    const lastCharAtEndLine = editor.document.lineAt(endLine).text.length; 
-
-    const lastLine = editor.document.lineCount - 1;
 
     if (editor.selection.isReversed) {
         const startPosition = new vscode.Position(endLine, endChar);
-        const destPosition = getNthCharOccurrence(charMatch, 1, direction, false, true);
+        const destPosition = getNthCharOccurrence(charMatch, 1, direction, false);
 
         editor.selection = new vscode.Selection(startPosition, destPosition);
     } else {
         const startPosition = new vscode.Position(startLine, startChar)
-        const destPosition = getNthCharOccurrence(charMatch, 1, direction, true, true);
+        const destPosition = getNthCharOccurrence(charMatch, 1, direction, true);
 
         editor.selection = new vscode.Selection(startPosition, destPosition);
     }

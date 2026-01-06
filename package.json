@@ -3,7 +3,7 @@
   "publisher": "badlvckinc",
   "displayName": "Froggy",
   "description": "An extension for quick document navigation and manipulation.",
-  "version": "3.2.1",
+  "version": "3.3.1",
   "engines": {
     "vscode": "^1.96.0"
   },
