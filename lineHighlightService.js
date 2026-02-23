@@ -14,11 +14,13 @@ function highlightLines(range) {
     resetHighlights();
 
     const editor = vscode.window.activeTextEditor;
+    
     if (!editor) {
         return;
     }
 
-    const currentLineIndex = editor.selection.active.line;
+    const lastSelection = editor.selections[editor.selections.length - 1];
+    const currentLineIndex = lastSelection.active.line;
     const lastLineIndex = editor.document.lineCount - 1;
     
     const lineUpIndex = Math.max(currentLineIndex - range, 0);

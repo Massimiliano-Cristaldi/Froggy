@@ -1,4 +1,4 @@
-const { GlobalKeyboardListener } = require("node-global-key-listener"); 
+const { GlobalKeyboardListener } = require("@futpib/node-global-key-listener"); 
 
 process.on('disconnect', () => process.exit());
 

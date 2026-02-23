@@ -1,5 +1,7 @@
 const vscode = require("vscode");
-const getNthCharOccurrence = require("./_common").getNthCharOccurrence;
+const selectToNextCharOccurrence = require("./_common").selectToNextCharOccurrence;
+const selectToLineEdge = require("./_common").selectToLineEdge;
+const focusLastSelection = require("./_common").focusLastSelection;
 
 function selectTo(args) {
     const editor = vscode.window.activeTextEditor;
@@ -11,15 +13,27 @@ function selectTo(args) {
     const distance = args["distance"];
     const direction = args["direction"];
 
-    const selectionStartLine = editor.selection.start.line;
-    const selectionEndLine = editor.selection.end.line;
+    let selections = [];
+    for (const selection of editor.selections) {
+        selections.push(moveSelectionCaret(selection, distance, direction));
+    }
+
+    editor.selections = selections;
+    focusLastSelection();
+}
+
+function moveSelectionCaret(selection, distance, direction) {
+    const editor = vscode.window.activeTextEditor;
+    
+    const selectionStartLine = selection.start.line;
+    const selectionEndLine = selection.end.line;
 
     const selectionHeight = selectionEndLine - selectionStartLine + 1;
-    const selectionLength = editor.document.getText(editor.selection).length;
+    const selectionLength = editor.document.getText(selection).length;
     var textLength = 0;
 
     for (let i = 0; i < selectionHeight; i++) {
-        textLength += editor.document.lineAt(editor.selection.end.line - i).text.length;
+        textLength += editor.document.lineAt(selection.end.line - i).text.length;
     }
 
     const isPartialLineSelection = selectionLength < textLength && distance === 1;
@@ -38,14 +52,7 @@ function selectTo(args) {
             targetPosition = new vscode.Position(selectionEndLine, targetColumn);
         }
 
-        editor.selection = new vscode.Selection(startPosition, targetPosition);
-
-        vscode.commands.executeCommand("revealLine", {
-            lineNumber: direction === "up" ? editor.selection.start.line : editor.selection.end.line,
-            at: "center"
-        });
-
-        return;
+        return new vscode.Selection(startPosition, targetPosition);
     }
 
     const lastLine = editor.document.lineCount - 1;
@@ -57,13 +64,13 @@ function selectTo(args) {
     let targetPosition;
 
     if (direction === "up") {
-        if (editor.selection.isReversed) {
+        if (selection.isReversed) {
             startColumn = editor.document.lineAt(selectionEndLine).text.length;
             startPosition = new vscode.Position(selectionEndLine, startColumn);
 
             targetColumn = 0;
             targetLine = Math.max(selectionStartLine - distance, 0);
-            targetPosition = new vscode.Position(targetLine, targetColumn)
+            targetPosition = new vscode.Position(targetLine, targetColumn);
         } else {
             if (selectionHeight > distance) {
                 startColumn = 0;
@@ -71,7 +78,7 @@ function selectTo(args) {
                 
                 targetLine = Math.max(selectionEndLine - distance, 0);
                 targetColumn = editor.document.lineAt(targetLine).text.length;
-                targetPosition = new vscode.Position(targetLine, targetColumn)
+                targetPosition = new vscode.Position(targetLine, targetColumn);
             } else {
                 const newStartLine = Math.max(selectionStartLine - 1, 0);
                 startColumn = editor.document.lineAt(newStartLine).text.length;
@@ -79,25 +86,25 @@ function selectTo(args) {
                 
                 targetLine = Math.max(selectionEndLine - distance, 0);
                 targetColumn = 0;
-                targetPosition = new vscode.Position(targetLine, targetColumn)
+                targetPosition = new vscode.Position(targetLine, targetColumn);
             }
         }
     } else if (direction === "down") {
-        if (editor.selection.isReversed && !editor.selection.isEmpty) {
+        if (selection.isReversed && !selection.isEmpty) {
             if (selectionHeight > distance) {
                 startColumn = editor.document.lineAt(selectionEndLine).text.length;
                 startPosition = new vscode.Position(selectionEndLine, startColumn);
                 
                 targetColumn = 0;
                 targetLine = Math.min(selectionStartLine + distance, lastLine);
-                targetPosition = new vscode.Position(targetLine, targetColumn)
+                targetPosition = new vscode.Position(targetLine, targetColumn);
             } else {
                 startColumn = 0;
                 startPosition = new vscode.Position(selectionEndLine + 1, startColumn);
                 
                 targetLine = Math.min(selectionStartLine + distance, lastLine);
                 targetColumn = editor.document.lineAt(targetLine).text.length;
-                targetPosition = new vscode.Position(targetLine, targetColumn)                
+                targetPosition = new vscode.Position(targetLine, targetColumn);               
             }
         } else {
             startColumn = 0;
@@ -105,16 +112,11 @@ function selectTo(args) {
 
             targetLine = Math.min(selectionEndLine + distance, lastLine);
             targetColumn = editor.document.lineAt(targetLine).text.length;
-            targetPosition = new vscode.Position(targetLine, targetColumn)
+            targetPosition = new vscode.Position(targetLine, targetColumn);
         }
     }
 
-    editor.selection = new vscode.Selection(startPosition, targetPosition);
-
-    vscode.commands.executeCommand("revealLine", {
-        lineNumber: targetLine,
-        at: "center"
-    });
+    return new vscode.Selection(startPosition, targetPosition);
 }
 
 function caseSmartSelectTo(args) {
@@ -125,65 +127,43 @@ function caseSmartSelectTo(args) {
     }
 
     const direction = args["direction"];
-    const charMatch = "[A-Z_-\\s\"';,\\.\\(\\)\\[\\]\\{\\}]";
 
-    let startLine = editor.selection.start.line;
-    let startChar = editor.selection.start.character;
-
-    let endLine = editor.selection.end.line;
-    let endChar = editor.selection.end.character;
-
-    if (editor.selection.isReversed) {
-        const startPosition = new vscode.Position(endLine, endChar);
-        const destPosition = getNthCharOccurrence(charMatch, 1, direction, false);
-
-        editor.selection = new vscode.Selection(startPosition, destPosition);
-    } else {
-        const startPosition = new vscode.Position(startLine, startChar)
-        const destPosition = getNthCharOccurrence(charMatch, 1, direction, true);
-
-        editor.selection = new vscode.Selection(startPosition, destPosition);
-    }
+    editor.selections = selectToNextCharOccurrence("caseSmart", direction);
+    focusLastSelection();
 }
 
 function expandSelectionToLineStart() {
     const editor = vscode.window.activeTextEditor;
+
     if (!editor) {
         return;
     }
 
-    const startLine = editor.selection.start.line;
-    const startChar = 0;
+    let selections = [];
 
-    const endLine = editor.selection.end.line;
-    const endChar = editor.selection.end.character;
-    
-    const extendedSelection = new vscode.Selection(
-        new vscode.Position(startLine, startChar),
-        new vscode.Position(endLine, endChar)
-    );
-    
-    editor.selection = extendedSelection;
+    for (const selection of editor.selections) {
+        selections.push(selectToLineEdge(selection, "start"));
+    }
+
+    editor.selections = selections;
+    focusLastSelection();
 }
 
 function expandSelectionToLineEnd() {
     const editor = vscode.window.activeTextEditor;
+
     if (!editor) {
         return;
     }
 
-    const startLine = editor.selection.start.line;
-    const startChar = editor.selection.start.character;
+    let selections = [];
 
-    const endLine = editor.selection.end.line;
-    const endLineLength = editor.document.lineAt(endLine).text.length;
+    for (const selection of editor.selections) {
+        selections.push(selectToLineEdge(selection, "end"));
+    }
 
-    const extendedSelection = new vscode.Selection(
-        new vscode.Position(startLine, startChar),
-        new vscode.Position(endLine, endLineLength)
-    );
-
-    editor.selection = extendedSelection;
+    editor.selections = selections;
+    focusLastSelection();
 }
 
 module.exports = {

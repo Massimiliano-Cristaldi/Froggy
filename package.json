@@ -208,6 +208,11 @@
     "test": "vscode-test"
   },
   "dependencies": {
-    "node-global-key-listener": "^0.3.0"
+    "@futpib/node-global-key-listener": "^1.0.3"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.0.1",
+    "globals": "^17.3.0"
   }
 }

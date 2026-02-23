@@ -1,27 +1,81 @@
-Thanks for using Froggy!
+# Froggy
+Thanks for using **Froggy**!
 
-Froggy is a simple tool for quick movement of the text cursor.
+Froggy is a simple tool that helps you move your text cursor quickly using intuitive keyboard shortcuts.
 
-All movements have default keybindings:
-- go up 5 lines = ctrl + up
-- go down 5 lines = ctrl + down
-- go up 10 lines = ctrl + alt + up
-- go down 10 lines = ctrl + alt + down
-- go to previous whitespace = ctrl + alt + 1
-- go to next whitespace = ctrl + alt + 3
-- go to previous word (case smart) = alt + left
-- go to next word (case smart) = alt + right
-- go to line start = ctrl + alt + left
-- go to line end = ctrl + alt + right
-- find the first/second/third whitespace on the left of the caret = ctrl + numpad1/numpad2/numpad3
-- find the first/second/third whitespace on the right of the caret = ctrl + alt + numpad1/numpad2/numpad3
-- expand/shrink selection up by 5 lines = ctrl + shift + up
-- expand/shrink selection down by 5 lines = ctrl + shift + down
-- expand/shrink selection up by 10 lines = ctrl + alt + shift + up
-- expand/shrink selection down by 10 lines = ctrl + alt + shift + down
-- expand/shrink selection to previous word (case smart) = alt + shift + left
-- expand/shrink selection to next word (case smart) = alt + shift + right
-- expand selection to beginning of first line of the selection range = ctrl + alt + shift + left
-- expand selection to end of last line of the selection range = ctrl + alt + shift + right
+## IMPORTANT: Read this if you're using Linux
 
-It's easy to remember these shortcuts: ctrl means jump close, ctrl + alt means jump far, adding shift means select instead of moving.
+There are two important caveats when using this extension on Linux:
+
+### 1. OS Shortcut Conflicts
+Some default shortcuts may be captured by your system, including:
+
+- `Ctrl + Alt + Arrow`
+- `Ctrl + Alt + Shift + Arrow`
+
+If these don't work, you’ll need to disable or remap them using tools such as `dconf-editor`.
+
+---
+
+### 2. Preview Feature Requires Root Permissions
+The **line preview feature** (holding `Ctrl` or `Ctrl + Alt`) depends on the `sudo-prompt` package, which requires you to grant root permissions to it.
+
+If you're uncomfortable with this, feel free to fork this repository and package your own version of this extension without this feature.
+
+---
+
+## Default Keybindings
+
+### Movement
+
+| Action | Shortcut |
+|--------|-----------|
+| Go up 5 lines | `Ctrl + ↑` |
+| Go down 5 lines | `Ctrl + ↓` |
+| Go up 10 lines | `Ctrl + Alt + ↑` |
+| Go down 10 lines | `Ctrl + Alt + ↓` |
+| Go to previous whitespace | `Ctrl + Alt + 1` |
+| Go to next whitespace | `Ctrl + Alt + 3` |
+| Go to previous word (case-smart) | `Alt + ←` |
+| Go to next word (case-smart) | `Alt + →` |
+| Go to line start | `Ctrl + Alt + ←` |
+| To go line end | `Ctrl + Alt + →` |
+| Go to first whitespace occurrence right/left | `Ctrl + Numpad 1/3` |
+| Go to second whitespace occurrence right/left | `Ctrl + Alt + Numpad 1/3` |
+
+---
+
+### Selection (Shift + Movement)
+
+| Action | Shortcut |
+|-----------|-----------|
+| Expand/shrink up 5 lines | `Ctrl + Shift + ↑` |
+| Expand/shrink down 5 lines | `Ctrl + Shift + ↓` |
+| Expand/shrink up 10 lines | `Ctrl + Alt + Shift + ↑` |
+| Expand/shrink down 10 lines | `Ctrl + Alt + Shift + ↓` |
+| Expand to previous word | `Alt + Shift + ←` |
+| Expand to next word | `Alt + Shift + →` |
+| Expand to line start | `Ctrl + Alt + Shift + ←` |
+| Expand to line end | `Ctrl + Alt + Shift + →` |
+
+---
+
+## You can refer to this table in order to remember these shortcuts easily
+
+| Key | Meaning |
+|---------|-----------|
+| `Ctrl` | Small jump |
+| `Ctrl + Alt` | Large jump |
+| `Alt` | Case-smart word jump |
+| `+ Shift` | Select instead of moving |
+
+---
+
+## Line Preview Feature
+
+Hold:
+
+- `Ctrl`
+- or `Ctrl + Alt`
+
+to preview where the cursor/selection will jump before committing.
